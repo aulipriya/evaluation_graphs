@@ -31,7 +31,6 @@ def create_training_vs_validation_loss_curve(training_data, validation_data, tit
 
 def generate_confusion_matrix(gt, pred, classes, checkpoint, result_folder, i=""):
     cm = confusion_matrix(gt, pred)
-
     commat = pd.DataFrame(np.mat(cm), index=classes,
                           columns=classes)
     plt.figure()
@@ -57,7 +56,7 @@ def generate_precision_recall_graph(cm, classes, checkpoint, result_folder, i=No
     for patch in ax.patches:
         ax.text(patch.get_x() + patch.get_width() / 2., 0.2 * patch.get_height(),
                 round(patch.get_height()*100, 2),
-                ha='center', va='bottom', fontsize=14, fontweight= 'bold',  rotation=90, color='white')
+                ha='center', va='bottom', fontsize=14, fontweight='bold',  rotation=90, color='white')
     total_precision = np.mean(precision)
     total_recall = np.mean(recall)
     total_f1 = (2*total_precision*total_recall)/(total_recall+total_precision)
@@ -152,25 +151,25 @@ def evaluate_models(config_path):
         classwise_accurates[model_path] = {key: 0 for key in classwise_images.keys()}
         model = load_model(os.path.join(models_path, model_path), config)
         for image_name in images_path:
-            print(image_name)
             label = labels[image_name]
             image = PIL.Image.open(os.path.join(test_set_path, image_name))
             probabilities = predict(image, tranformation, model, config['device'])
-
-            pred_probs.append([probabilities['holes'].squeeze().tolist(),
-                               probabilities['growth'].squeeze().tolist()]) if len(
+            pred_probs.append([probabilities[list(config['classes'].keys())[1]].squeeze().tolist(),
+                               probabilities[list(config['classes'].keys())[0]].squeeze().tolist()]) if len(
                 probabilities.keys()) == 2 else pred_probs.append(
                 probabilities[list(config['classes'].keys())[0]].squeeze().tolist())
             final_prediction = postprocess_output(probabilities, config['classes'])
-            gt.append([config['classes']['holes'].index(label[1]), config['classes']['growth'].index(label[0])]) if len(
+            gt.append([config['classes'][list(config['classes'].keys())[1]].index(label[1]),
+                       config['classes'][list(config['classes'].keys())[0]].index(label[0])]) if len(
                 list(config['classes'].keys())) == 2 else gt.append(
                 config['classes'][list(config['classes'].keys())[0]].index(label))
-            preds.append([config['classes']['holes'].index(final_prediction['holes']), config['classes']['growth'].
-                         index(final_prediction['growth'])]) if len(
+            preds.append([config['classes'][list(config['classes'].keys())[1]].index(
+                final_prediction[list(config['classes'].keys())[1]]),
+                config['classes'][list(config['classes'].keys())[0]].index(
+                    final_prediction[list(config['classes'].keys())[0]])]) if len(
                 list(config['classes'].keys())) == 2 else preds.append(
                 config['classes'][list(config['classes'].keys())[0]].index(
                     final_prediction[list(config['classes'].keys())[0]]))
-
             # Calculate accurates
             i = 0
             for key, value in final_prediction.items():
