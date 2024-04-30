@@ -5,3 +5,5 @@ venv/
 .idea/
 .idea
 results/
+checkpoints/
+/checkpoints/
