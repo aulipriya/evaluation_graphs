@@ -2,13 +2,13 @@ import os
 import matplotlib.pyplot as plt
 import mplcyberpunk
 from utills import (load_config_from_yaml, load_labels_from_df, load_label_csv, load_model, predict, postprocess_output,
-                    build_eval_transformation)
+                    build_eval_transformation, running_in_docker)
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 import seaborn as sns
 import PIL
 import pandas as pd
 import numpy as np
-plt.style.use("cyberpunk")
+plt.style.use('cyberpunk')
 
 
 def create_training_vs_validation_loss_curve(training_data, validation_data, title, xlabel, ylabel, output_image_name):
@@ -26,12 +26,14 @@ def create_training_vs_validation_loss_curve(training_data, validation_data, tit
     plt.grid(True)
     mplcyberpunk.add_glow_effects()
     plt.savefig(output_image_name)
-    plt.show()
+    if not running_in_docker():
+        plt.show()
 
 
 def generate_confusion_matrix(gt, pred, classes, checkpoint, result_folder, i=""):
     cm = confusion_matrix(gt, pred)
-    commat = pd.DataFrame(np.mat(cm), index=classes,
+
+    commat = pd.DataFrame(cm, index=classes,
                           columns=classes)
     plt.figure()
     sns.heatmap(commat, annot=True, cmap="Blues", fmt='d')
@@ -39,7 +41,8 @@ def generate_confusion_matrix(gt, pred, classes, checkpoint, result_folder, i=""
     plt.xlabel('Predicted label')
     plt.title(f'{checkpoint} Confusion Matrix')
     plt.savefig(f'{result_folder}/{checkpoint}_{i}_cm.jpg')
-    plt.show()
+    if not running_in_docker():
+        plt.show()
     return cm
 
 
@@ -65,7 +68,8 @@ def generate_precision_recall_graph(cm, classes, checkpoint, result_folder, i=No
     mplcyberpunk.add_glow_effects()
     plt.title(f'Precison {round(total_precision*100, 2)}%   Recall {round(total_recall*100, 2)}% of {checkpoint}')
     plt.savefig(f'{result_folder}/{checkpoint}_{i}_prec_rec.jpg')
-    plt.show()
+    if not running_in_docker():
+        plt.show()
     return total_precision, total_recall, total_f1
 
 
@@ -83,7 +87,8 @@ def generate_barplot_for_one_metric(metric_dict, metric_name, experiment, result
     ax.set_xticklabels(labels=[checkpoint.split('.')[0] for checkpoint in metric_df['checkpoints'].tolist()], rotation=90)
     plt.title(f'{metric_name.capitalize()}s of Experiment {experiment}')
     plt.savefig(f'{result_folder}/exp_{experiment}_{metric_name}_bar_chart.jpg')
-    plt.show()
+    if not running_in_docker():
+        plt.show()
 
 
 def generate_roc(gt, pred_probs, classes, result_folder, checkpoint, counter=None):
@@ -110,7 +115,8 @@ def generate_roc(gt, pred_probs, classes, result_folder, checkpoint, counter=Non
     plt.grid(True)
     mplcyberpunk.add_glow_effects()
     plt.savefig(f'{result_folder}/{checkpoint}_{counter}_auc.jpg')
-    plt.show()
+    if not running_in_docker():
+        plt.show()
 
 
 def evaluate_models(config_path):
@@ -154,6 +160,9 @@ def evaluate_models(config_path):
             label = labels[image_name]
             image = PIL.Image.open(os.path.join(test_set_path, image_name))
             probabilities = predict(image, tranformation, model, config['device'])
+            if not isinstance(probabilities, dict):
+                temp = probabilities
+                probabilities = {'objects': temp}
             pred_probs.append([probabilities[list(config['classes'].keys())[1]].squeeze().tolist(),
                                probabilities[list(config['classes'].keys())[0]].squeeze().tolist()]) if len(
                 probabilities.keys()) == 2 else pred_probs.append(
@@ -177,8 +186,10 @@ def evaluate_models(config_path):
                     classwise_accurates[model_path][label] += 1
                     accurates[model_path] += 1
                     i += 1
+
         cm = generate_confusion_matrix(gt, preds, config['classes'][list(config['classes'].keys())[0]],
                                        model_path, result_folder, '')
+
         precision, recall, f1 = generate_precision_recall_graph(cm, config['classes'][
             list(config['classes'].keys())[0]], model_path,
                                                                 result_folder, '')

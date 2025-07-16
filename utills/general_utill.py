@@ -30,10 +30,17 @@ def load_labels_from_df(df, image_path, classes):
         return (df[df['image_path'] == image_path]['growth'].values[0],
                 df[df['image_path'] == image_path]['holes'].values[0])
     else:
-        return df[df['image_path'] == image_path][list(classes.keys())[0]].values[0]
+        try :
+            return df[df['image_path'] == image_path][list(classes.keys())[0]].values[0]
+        except IndexError:
+            print(image_path)
 
 
 def load_cv2_image_from_s3(image_path, config):
     s3 = boto3.client('s3')
     return cv2.imdecode(np.frombuffer(s3.get_object(Bucket=config['bucket'], Key=image_path)['Body'].read(), np.uint8),
                         cv2.IMREAD_COLOR)
+
+# Detect if running inside Docker
+def running_in_docker():
+    return os.path.exists("/.dockerenv") or os.getenv("RUNNING_IN_DOCKER") == "1"

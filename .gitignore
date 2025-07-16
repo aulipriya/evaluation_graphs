@@ -5,5 +5,4 @@ venv/
 .idea/
 .idea
 results/
-checkpoints/
-/checkpoints/
+.DS_Store

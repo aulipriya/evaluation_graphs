@@ -1,4 +1,4 @@
-from models import MultilabelTinyNet
+from models import MultilabelTinyNet, get_model
 from torchvision import transforms
 import torch
 from PIL import Image
@@ -9,9 +9,10 @@ import time
 
 
 def load_model(model_path, config):
-    model = MultilabelTinyNet(config['classes'], training=False)
+    model = get_model(config)
     weight = torch.load(model_path) if config['device'] == 'cuda:0' else (torch.load(model_path, map_location='cpu'))
-    model.load_state_dict(weight['model'],  strict=False)
+    # model.load_state_dict(weight['model'],  strict=False)
+    model.load_state_dict(weight, strict=False)
     model.eval()
     return model
 
@@ -19,7 +20,7 @@ def load_model(model_path, config):
 def build_eval_transformation(config):
     return transforms.Compose([
         transforms.ToTensor(),
-        transforms.Resize((config['model_width'], config['model_height']), transforms.InterpolationMode.BICUBIC),
+        # transforms.Resize((config['model_width'], config['model_height']), transforms.InterpolationMode.BICUBIC),
         transforms.Normalize(mean=config['mean'], std=config['std']),
     ])
 

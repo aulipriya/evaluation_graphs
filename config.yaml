@@ -1,16 +1,15 @@
 device: 'cpu'
 num_classes: 1000     # Number of classes
-name: 'tinynet'
-checkpoints_path: './checkpoints/exp_33_3/' # Path to the directory where models are saved
-test_set_path: '../../image_preparation/data/test_set_5/'
+name: 'resnet50'
+checkpoints_path: './example_model/' # Path to the directory where models are saved
+test_set_path: './example_dataset/'
 test_set_type: 'csv' # Possible values ['csv', 'folder']
-test_set_csv_path: '../../image_preparation/data/test_set_5/labels.csv' # '' if test_set_type is folder
-mean: [0.485, 0.456, 0.406]
-std: [0.229, 0.224, 0.225]
+test_set_csv_path: './example_dataset/labels.csv' # '' if test_set_type is folder
+mean: [0.4914, 0.4822, 0.4465]
+std: [0.2471, 0.2435, 0.2616]
 model_width: 1080
 model_height: 1080
-experiment: 33_5
-#classes: {growth: ['high_growth', 'low_growth', 'medium_growth'], holes: ['no holes', 'holes']}
-classes: { holes: ['no holes', 'holes']}
+experiment: 1
+classes: {objects: ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]}
 result_folder: './results/'
 bucket: 'dev-model-training'
