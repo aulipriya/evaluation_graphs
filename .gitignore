@@ -6,3 +6,4 @@ venv/
 .idea
 results/
 .DS_Store
+/example_model
