@@ -1,4 +1,4 @@
-from evaluate import *
+from evaluate import create_training_vs_validation_loss_curve, evaluate_models
 from utills import load_config_from_yaml
 
 if __name__ == '__main__':

@@ -1,7 +1,6 @@
-import os, csv, random
+import csv
+import random
 from pathlib import Path
-
-import torch
 from torchvision import datasets, transforms
 from torchvision.utils import save_image  # writes tensors as PNGs
 

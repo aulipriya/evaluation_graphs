@@ -1,11 +1,8 @@
-from models import MultilabelTinyNet, get_model
+from models import get_model
 from torchvision import transforms
 import torch
 from PIL import Image
 import cv2
-import boto3
-from io import BytesIO
-import time
 
 
 def load_model(model_path, config):
