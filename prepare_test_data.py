@@ -5,8 +5,8 @@ from torchvision import datasets, transforms
 from torchvision.utils import save_image  # writes tensors as PNGs
 
 # ---------- CONFIG --------------------------------------------------------------------
-SPLIT = "test"         # "train" or "test"
-NUM_PER_CLASS = 10     # how many images per class
+SPLIT = "test"  # "train" or "test"
+NUM_PER_CLASS = 10  # how many images per class
 OUT_DIR = Path("example_dataset")  # folder to create / reuse
 # --------------------------------------------------------------------------------------
 

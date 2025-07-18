@@ -18,28 +18,36 @@ def load_label_csv(csv_file_path, config):
         label_data = pd.read_csv(csv_file_path, header=0, index_col=False)
     else:
         s3 = boto3.client("s3")
-        csv_obj = s3.get_object(Bucket=config['bucket'], Key=csv_file_path)
-        body = csv_obj['Body']
-        csv_string = body.read().decode('utf-8')
+        csv_obj = s3.get_object(Bucket=config["bucket"], Key=csv_file_path)
+        body = csv_obj["Body"]
+        csv_string = body.read().decode("utf-8")
         label_data = pd.read_csv(StringIO(csv_string), header=0, index_col=False)
     return label_data
 
 
 def load_labels_from_df(df, image_path, classes):
     if len(classes) == 2:
-        return (df[df['image_path'] == image_path]['growth'].values[0],
-                df[df['image_path'] == image_path]['holes'].values[0])
+        return (
+            df[df["image_path"] == image_path]["growth"].values[0],
+            df[df["image_path"] == image_path]["holes"].values[0],
+        )
     else:
-        try :
-            return df[df['image_path'] == image_path][list(classes.keys())[0]].values[0]
+        try:
+            return df[df["image_path"] == image_path][list(classes.keys())[0]].values[0]
         except IndexError:
             print(image_path)
 
 
 def load_cv2_image_from_s3(image_path, config):
-    s3 = boto3.client('s3')
-    return cv2.imdecode(np.frombuffer(s3.get_object(Bucket=config['bucket'], Key=image_path)['Body'].read(), np.uint8),
-                        cv2.IMREAD_COLOR)
+    s3 = boto3.client("s3")
+    return cv2.imdecode(
+        np.frombuffer(
+            s3.get_object(Bucket=config["bucket"], Key=image_path)["Body"].read(),
+            np.uint8,
+        ),
+        cv2.IMREAD_COLOR,
+    )
+
 
 # Detect if running inside Docker
 def running_in_docker():

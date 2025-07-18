@@ -4,11 +4,11 @@ import torch.nn.functional as F
 
 
 def get_model(config):
-    name = config['name']
-    classes = config['classes']
-    if name == 'resnet50':
-       return resnet50()
-    elif name == 'tinynet':
+    name = config["name"]
+    classes = config["classes"]
+    if name == "resnet50":
+        return resnet50()
+    elif name == "tinynet":
         return MultilabelTinyNet(classes)
     else:
         return MultilabelMobileOne(classes)
@@ -17,7 +17,7 @@ def get_model(config):
 class MultilabelTinyNet(nn.Module):
     def __init__(self, classes):
         super(MultilabelTinyNet, self).__init__()
-        self.tinynet = timm.create_model('tinynet_a', pretrained=True)
+        self.tinynet = timm.create_model("tinynet_a", pretrained=True)
         self.classes = classes
         self.linear1 = nn.Linear(1000, 100)
         if isinstance(classes, dict) and len(classes) == 1:
@@ -34,16 +34,22 @@ class MultilabelTinyNet(nn.Module):
     def forward(self, x):
         output = self.tinynet(x)
         if len(self.classes) == 1:
-            return {list(self.classes.keys())[0]: self.classifier(self.relu(self.linear1(output)))}
+            return {
+                list(self.classes.keys())[0]: self.classifier(
+                    self.relu(self.linear1(output))
+                )
+            }
         else:
-            return {'holes': self.hole(self.relu(self.linear1(output))),
-                    'growth': self.growth(self.relu(self.linear1(output)))}
+            return {
+                "holes": self.hole(self.relu(self.linear1(output))),
+                "growth": self.growth(self.relu(self.linear1(output))),
+            }
 
 
 class MultilabelMobileOne(nn.Module):
     def __init__(self, classes):
         super(MultilabelMobileOne, self).__init__()
-        self.mobileOne = timm.create_model('mobileone_s2', pretrained=True)
+        self.mobileOne = timm.create_model("mobileone_s2", pretrained=True)
         self.linear1 = nn.Linear(1000, 100)
         self.classes = classes
         if isinstance(classes, dict) and len(classes) == 1:
@@ -61,10 +67,16 @@ class MultilabelMobileOne(nn.Module):
         output = self.mobileOne(x)
 
         if len(self.classes) == 1:
-            return {list(self.classes.keys())[0]: self.classifier(self.relu(self.linear1(output)))}
+            return {
+                list(self.classes.keys())[0]: self.classifier(
+                    self.relu(self.linear1(output))
+                )
+            }
         else:
-            return {'holes': self.hole(self.relu(self.linear1(output))),
-                    'growth': self.growth(self.relu(self.linear1(output)))}
+            return {
+                "holes": self.hole(self.relu(self.linear1(output))),
+                "growth": self.growth(self.relu(self.linear1(output))),
+            }
 
 
 class LambdaLayer(nn.Module):
@@ -122,6 +134,7 @@ class BasicBlock(nn.Module):
         out += self.shortcut(x)
         out = F.relu(out)
         return out
+
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
     """3x3 convolution with padding"""
@@ -322,10 +335,10 @@ class ResNet(nn.Module):
 
         return x
 
+
 def _resnet(block, layers, **kwargs):
     model = ResNet(block, layers, **kwargs)
     return model
-
 
 
 def resnet50(**kwargs):
@@ -334,6 +347,4 @@ def resnet50(**kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet(Bottleneck, [3, 4, 6, 3], **kwargs
-    )
-
+    return _resnet(Bottleneck, [3, 4, 6, 3], **kwargs)
