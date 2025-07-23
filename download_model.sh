@@ -8,4 +8,4 @@ pip install --no-cache-dir gdown
 mkdir -p /app/example_models
 cd /app/example_models
 
-gdown --folders https://drive.google.com/drive/folders/1RWfl_mU-0kAR92kXVZlHvNadIiok90cE
+gdown --folder https://drive.google.com/drive/folders/1RWfl_mU-0kAR92kXVZlHvNadIiok90cE
