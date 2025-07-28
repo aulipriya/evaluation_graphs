@@ -40,7 +40,7 @@ jobs:
         run: docker build -t pytorch-eval-app:latest .
 
       - name: Run Docker smoke test
-        run: docker run --rm -v ${{ github.workspace }}/results:/app/results pytorch-eval-app:latest python --version
+        run: docker run --rm -v ${{ github.workspace }}/results:/app/results  -v ${{ github.workspace }}/example_models:app/example_models  pytorch-eval-app:latest python --version
 
       - name: Validate result folder outputs
         run: |
@@ -49,7 +49,7 @@ jobs:
             exit 1
           fi
           PT_FILE_COUNT=$(find example_models/ -type f -name '*.pt' | wc -l )
-          REQUIRED_FILE_COUNT=$(PT_FILE_COUNT*3 +3)
+          REQUIRED_FILE_COUNT=$((PT_FILE_COUNT*3 +3))
           echo "Required File Count $REQUIRED_FILE_COUNT"
           EXISTING_FILE_COUNT=$(find results -mindepth 2 -maxdepth 2 -type f | wc -l)
           
