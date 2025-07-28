@@ -7,3 +7,4 @@ venv/
 results/
 .DS_Store
 /example_model
+/example_dataset/

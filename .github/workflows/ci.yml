@@ -40,12 +40,33 @@ jobs:
         run: docker build -t pytorch-eval-app:latest .
 
       - name: Run Docker smoke test
-        run: docker run --rm pytorch-eval-app:latest python --version
+        run: docker run --rm -v ${{ github.workspace }}/results:/app/results pytorch-eval-app:latest python --version
 
-      - name:  Save evaluation results (if generated)
+      - name: Validate result folder outputs
+        run: |
+          if [ ! -d "results" ]; then
+            echo "Results directory not found!"
+            exit 1
+          fi
+          PT_FILE_COUNT=$(find example_model/ -type f -name '*.pt' | wc -l )
+          REQUIRED_FILE_COUNT=$(PT_FILE_COUNT*3 +3)
+          echo "Required File Count $REQUIRED_FILE_COUNT"
+          EXISTING_FILE_COUNT=$(find results -mindepth 2 -maxdepth 2 -type f | wc -l)
+          
+          # Compare
+          if [ "$EXISTING_FILE_COUNT" -lt "$REQUIRED_FILE_COUNT" ]; then
+            echo "Missing result files!"
+            exit 1
+          else
+            echo "All required result files exist."
+          fi
+          
+
+      - name: Save evaluation results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: results
           path: results/
-          if-no-files-found: ignore
+          if-no-files-found: error
+
