@@ -48,7 +48,7 @@ jobs:
             echo "Results directory not found!"
             exit 1
           fi
-          PT_FILE_COUNT=$(find example_model/ -type f -name '*.pt' | wc -l )
+          PT_FILE_COUNT=$(find example_models/ -type f -name '*.pt' | wc -l )
           REQUIRED_FILE_COUNT=$(PT_FILE_COUNT*3 +3)
           echo "Required File Count $REQUIRED_FILE_COUNT"
           EXISTING_FILE_COUNT=$(find results -mindepth 2 -maxdepth 2 -type f | wc -l)
