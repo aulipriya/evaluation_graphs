@@ -49,6 +49,7 @@ jobs:
             exit 1
           fi
           PT_FILE_COUNT=$(find example_models/ -type f -name '*.pt' | wc -l )
+          echo "  Pt file count $PT_FILE_COUNT" 
           REQUIRED_FILE_COUNT=$((PT_FILE_COUNT*3 +3))
           echo "Required File Count $REQUIRED_FILE_COUNT"
           EXISTING_FILE_COUNT=$(find results -mindepth 2 -maxdepth 2 -type f | wc -l)
