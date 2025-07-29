@@ -40,7 +40,14 @@ jobs:
         run: docker build -t pytorch-eval-app:latest .
 
       - name: Run Docker smoke test
-        run: docker run --rm -v ${{ github.workspace }}/results:/app/results  -v ${{ github.workspace }}/example_models:/app/example_models  pytorch-eval-app:latest python --version
+        run: |
+          docker run -d --name eval_temp_container pytorch-eval-app:latest
+          docker wait eval_temp_container
+
+      - name: Copy generated files from container
+        run: |
+          docker cp eval_temp_container:/app/example_models ./example_models
+          docker cp eval_temp_container:/app/results ./results
 
       - name: Validate result folder outputs
         run: |
@@ -61,7 +68,6 @@ jobs:
           else
             echo "All required result files exist."
           fi
-          
 
       - name: Save evaluation results
         if: always()
@@ -70,4 +76,7 @@ jobs:
           name: results
           path: results/
           if-no-files-found: error
+
+      - name: Clean up container
+        run: docker rm eval_temp_container
 
