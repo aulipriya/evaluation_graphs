@@ -40,7 +40,7 @@ jobs:
         run: docker build -t pytorch-eval-app:latest .
 
       - name: Run Docker smoke test
-        run: docker run --rm -v ${{ github.workspace }}/results:/app/results  -v ${{ github.workspace }}/example_models:app/example_models  pytorch-eval-app:latest python --version
+        run: docker run --rm -v ${{ github.workspace }}/results:/app/results  -v ${{ github.workspace }}/example_models:/app/example_models  pytorch-eval-app:latest python --version
 
       - name: Validate result folder outputs
         run: |
