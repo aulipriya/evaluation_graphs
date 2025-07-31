@@ -45,14 +45,14 @@ jobs:
 
       - name: Inspect container results
         run: |
-              docker logs eval_temp_container
-              docker exec eval_temp_container ls -lah /app/results || echo "No result folder"
-              docker exec eval_temp_container find /app/results -type f || echo "No files found"
+          docker logs eval_temp_container
+          docker exec eval_temp_container ls -lah /app/results || echo "No result folder"
+          docker exec eval_temp_container find /app/results -type f || echo "No files found"
 
       - name: Copy generated files from container
         run: |
           docker cp eval_temp_container:/app/example_models ./example_models
-         docker cp eval_temp_container:/app/results ./results || echo "Failed to copy results"
+          docker cp eval_temp_container:/app/results ./results || echo "Failed to copy results"
 
       - name: Validate result folder outputs
         run: |
