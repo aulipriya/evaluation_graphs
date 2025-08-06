@@ -6,5 +6,6 @@ venv/
 .idea
 results/
 .DS_Store
-/example_model
+/example_models
 /example_dataset/
+/example_models/

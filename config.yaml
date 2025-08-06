@@ -1,7 +1,7 @@
 device: 'cpu'
 num_classes: 1000     # Number of classes
 name: 'resnet50'
-checkpoints_path: './example_model/' # Path to the directory where models are saved
+checkpoints_path: './example_models/' # Path to the directory where models are saved
 test_set_path: './example_dataset/'
 test_set_type: 'csv' # Possible values ['csv', 'folder']
 test_set_csv_path: './example_dataset/labels.csv' # '' if test_set_type is folder
